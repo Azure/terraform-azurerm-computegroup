@@ -3,7 +3,7 @@ provider "azurerm" {
 }
 
 module "loadbalancer" {
-  source = "github.com/Azure/terraform-azurerm-loadbalancer"
+  source = "github.com/Microsoft/terraform-azurerm-loadbalancer"
   resource_group_name = "${ var.resource_group_name }"
   location = "${var.location}"
   lb_port = "${var.lb_port}"
