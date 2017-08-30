@@ -13,6 +13,11 @@ variable "vm_size" {
   description = "Size of the Virtual Machine based on Azure sizing"
 }
 
+variable "managed_disk_type" {
+  default     = "Standard_LRS"
+  description = "Type of managed disk for the VMs that will be part of this compute group. Allowable values are 'Standard_LRS' or 'Premium_LRS'."
+}
+
 variable "admin_username" {
   description = "The admin username of the VMSS that will be deployed"
   default     = "azureuser"

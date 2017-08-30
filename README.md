@@ -13,6 +13,7 @@ Module Input Variables
 - `resource_group_name` - The name of the resource group in which the resources will be created.
 - `location` - The Azure location where the resources will be created.
 - `vm_size` - The initial size of the virtual machine that will be used in the VM Scale Set.
+- `managed_disk_type` - The The type of storage to use for the managed disk for the VM Scale Set. Allowable values are `Standard_LRS` (default) or `Premium_LRS`. 
 - `admin_username` - The name of the administrator to access the machines part of the virtual machine scale set. 
 - `admin_password` - The password of the administrator account. The password must comply with the complexity requirements for Azure virtual machines.
 - `ssh_key` - The path on the local machine of the ssh public key in the case of a Linux deployment.  

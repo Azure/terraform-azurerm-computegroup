@@ -3,7 +3,7 @@ provider "azurerm" {
 }
 
 module "loadbalancer" {
-  source = "github.com/Microsoft/terraform-azurerm-loadbalancer"
+  source = "github.com/Azure/terraform-azurerm-loadbalancer"
   resource_group_name = "${ var.resource_group_name }"
   location = "${var.location}"
   lb_port = "${var.lb_port}"
@@ -61,7 +61,7 @@ resource "azurerm_virtual_machine_scale_set" "vmss" {
     name              = ""
     caching           = "ReadWrite"
     create_option     = "FromImage"
-    managed_disk_type = "Standard_LRS"
+    managed_disk_type = "${ var.managed_disk_type }"
   }
 
   storage_profile_data_disk {
