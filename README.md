@@ -40,6 +40,7 @@ module "computegroup" {
     resource_group_name = "my-resource-group"
     location            = "westus"
     vm_size             = "Standard_A0"
+    managed_disk_type   = "Standard_LRS"
     admin_username      = "azureuser"
     admin_password      = "ComplexPassword"
     ssh_key             = "~/.ssh/id_rsa.pub"
