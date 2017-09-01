@@ -58,6 +58,11 @@ variable "vm_os_sku" {
   default = ""
 }
 
+variable "vm_os_version" {
+  description = "The version of the image that you want to deploy."
+  default = "latest"
+}
+
 variable "vm_os_id" {
   description = "The ID of the image that you want to deploy if you are using a custom image."
   default = ""

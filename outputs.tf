@@ -1,9 +1,11 @@
 output "vmss_name_public" {
-  value = "${azurerm_virtual_machine_scale_set.vmss.name}"
+  value = "${var.vm_os_simple == "Windows" ? azurerm_virtual_machine_scale_set.vm-windows.name : azurerm_virtual_machine_scale_set.vm-linux.name}"
+  # value = "${azurerm_virtual_machine_scale_set.vm-linux.name}"
 }
 
 output "vmss_id" {
-  value = "${azurerm_virtual_machine_scale_set.vmss.id}"
+  value = "${var.vm_os_simple == "Windows" ? azurerm_virtual_machine_scale_set.vm-windows.id : azurerm_virtual_machine_scale_set.vm-linux.id }}" 
+  # value = "${azurerm_virtual_machine_scale_set.vm-linux.name}"
 }
 
 output "vnet_id" {

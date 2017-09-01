@@ -19,12 +19,13 @@ Module Input Variables
 - `ssh_key` - The path on the local machine of the ssh public key in the case of a Linux deployment.  
 - `nb_instance` - The number of instances that will be initially deployed in the virtual machine scale set.
 - `protocol` - A map representing the protocols and ports to open on the load balancer in front of the virtual machine scale set.
-- `vm_os_simple`- This variable allows to use a simple name to reference Linux or Windows operating systems. When used, you can ommit the `vm_os_publisher`, `vm_os_offer` and `vm_os_sku`. The supported values are: "Ubuntu", "Windows", "RHEL", "SUSE", "CentOS", "Debian", "CoreOS" and "SLES".
+- `vm_os_simple`- This variable allows to use a simple name to reference Linux or Windows operating systems. When used, you can ommit the `vm_os_publisher`, `vm_os_offer` and `vm_os_sku`. The supported values are: "UbuntuServer", "WindowsServer", "RHEL", "openSUSE-Leap", "CentOS", "Debian", "CoreOS" and "SLES".
 - `vm_os_id` - The ID of the image that you want to deploy if you are using a custom image. When used, you can ommit the `vm_os_publisher`, `vm_os_offer` and `vm_os_sku`. 
 
 - `vm_os_publisher` - The name of the publisher of the image that you want to deploy, for example "Canonical" if you are not using the `vm_os_simple` or `vm_os_id` variables. 
 - `vm_os_offer` - The name of the offer of the image that you want to deploy, for example "UbuntuServer" if you are not using the `vm_os_simple` or `vm_os_id` variables. 
 - `vm_os_sku` - The sku of the image that you want to deploy, for example "14.04.2-LTS" if you are not using the `vm_os_simple` or `vm_os_id` variables. 
+- `vm_os_version` - The version of the image that you want to deploy, default is "latest". 
 
 - `lb_port` - Protocols to be used for the load balancer rules [frontend_port, protocol, backend_port]. Set to blank to disable.
 - `tags` - A map of the tags to use on the resources that are deployed with this module.
@@ -45,7 +46,7 @@ module "computegroup" {
     admin_password      = "ComplexPassword"
     ssh_key             = "~/.ssh/id_rsa.pub"
     nb_instance         = 2
-    vm_os_simple        = "Ubuntu"
+    vm_os_simple        = "UbuntuServer"
     vm_os_publisher     = ""
     vm_os_offer         = ""
     vm_os_sku           = ""
