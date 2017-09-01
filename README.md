@@ -13,14 +13,18 @@ Module Input Variables
 - `resource_group_name` - The name of the resource group in which the resources will be created.
 - `location` - The Azure location where the resources will be created.
 - `vm_size` - The initial size of the virtual machine that will be used in the VM Scale Set.
+- `vmscaleset_name` - The name of the VM scale set that will be created in Azure.
+- `computer_name_prefix` - The prefix of the name of the VM that will be deployed as part of the VM scale set.
 - `managed_disk_type` - The The type of storage to use for the managed disk for the VM Scale Set. Allowable values are `Standard_LRS` (default) or `Premium_LRS`. 
 - `admin_username` - The name of the administrator to access the machines part of the virtual machine scale set. 
 - `admin_password` - The password of the administrator account. The password must comply with the complexity requirements for Azure virtual machines.
 - `ssh_key` - The path on the local machine of the ssh public key in the case of a Linux deployment.  
 - `nb_instance` - The number of instances that will be initially deployed in the virtual machine scale set.
+- `vnet_subnet_id` - The subnet id of the virtual network on which the vm scale set will be connected.
+- `network_profile` - The name of the network profile that will be used in the VM scale set.
 - `protocol` - A map representing the protocols and ports to open on the load balancer in front of the virtual machine scale set.
 
-- `vm_os_simple`- This variable allows to use a simple name to reference Linux or Windows operating systems. When used, you **MUST** ommit the `vm_os_publisher`, `vm_os_offer` and `vm_os_sku`. The supported values are: "UbuntuServer", "WindowsServer", "RHEL", "openSUSE-Leap", "CentOS", "Debian", "CoreOS" and "SLES".
+- `vm_os_simple`- This variable allows to use a simple name to reference Linux or Windows operating systems. When used, you can ommit the `vm_os_publisher`, `vm_os_offer` and `vm_os_sku`. The supported values are: "UbuntuServer", "WindowsServer", "RHEL", "openSUSE-Leap", "CentOS", "Debian", "CoreOS" and "SLES".
 
 - `vm_os_id` - The ID of the image that you want to deploy if you are using a custom image. When used, you can ommit the `vm_os_publisher`, `vm_os_offer` and `vm_os_sku`. 
 
@@ -29,6 +33,7 @@ Module Input Variables
 - `vm_os_sku` - The sku of the image that you want to deploy, for example "14.04.2-LTS" if you are not using the `vm_os_simple` or `vm_os_id` variables. 
 - `vm_os_version` - The version of the image that you want to deploy, default is "latest". 
 
+- `load_balancer_backend_address_pool_ids` - The id of the backend address pools of the loadbalancer to which the VM scale set is attached.
 - `lb_port` - Protocols to be used for the load balancer rules [frontend_port, protocol, backend_port]. Set to blank to disable.
 - `tags` - A map of the tags to use on the resources that are deployed with this module.
 
@@ -38,21 +43,35 @@ Usage
 Using the `vm_os_simple`: 
 
 ```hcl 
+provider "azurerm" {
+  version = "~> 0.1"
+}
+
+module "network" {
+    source = "Azure/network/azurerm"
+    location = "westus"
+    prefix   = "vmss"
+  }
+
+module "loadbalancer" {
+  source = "Azure/loadbanacer/azurerm"
+  resource_group_name = "terraform-test"
+  location = "westus"
+  prefix = "terraform-test"
+}
+
 module "computegroup" { 
-    source              = "./path/to/module"
+    source              = Azure/computegroup/azurerm"
     resource_group_name = "my-resource-group"
     location            = "westus"
     vm_size             = "Standard_A0"
-    managed_disk_type   = "Standard_LRS"
     admin_username      = "azureuser"
     admin_password      = "ComplexPassword"
     ssh_key             = "~/.ssh/id_rsa.pub"
     nb_instance         = 2
     vm_os_simple        = "UbuntuServer"
-    vm_os_publisher     = ""
-    vm_os_offer         = ""
-    vm_os_sku           = ""
-    vm_os_id            = ""
+    vnet_subnet_id      = "${module.network.vnet_subnets[0]}"
+    load_balancer_backend_address_pool_ids = "${module.loadbalancer.azurerm_lb_backend_address_pool_id}"
     lb_port             = { 
                             http = ["80", "Tcp", "80"]
                             https = ["443", "Tcp", "443"]
@@ -63,13 +82,35 @@ module "computegroup" {
                           }
 }
 
+output "vmss_name"{
+  value = "${module.computegroup.vmss_name}"
+}
+
 ```
 
 Using the `vm_os_publisher`, `vm_os_offer` and `vm_os_sku` 
 
 ```hcl 
+
+provider "azurerm" {
+  version = "~> 0.1"
+}
+
+module "network" {
+    source = "Azure/network/azurerm"
+    location = "westus"
+    prefix   = "vmss"
+  }
+
+module "loadbalancer" {
+  source = "Azure/loadbanacer/azurerm"
+  resource_group_name = "terraform-test"
+  location = "westus"
+  prefix = "terraform-test"
+}
+
 module "computegroup" { 
-    source              = "./path/to/module"
+    source              = Azure/computegroup/azurerm"
     resource_group_name = "my-resource-group"
     location            = "westus"
     vm_size             = "Standard_A0"
@@ -77,11 +118,11 @@ module "computegroup" {
     admin_password      = "ComplexPassword"
     ssh_key             = "~/.ssh/id_rsa.pub"
     nb_instance         = 2
-    vm_os_simple        = ""
     vm_os_publisher     = "Canonical"
     vm_os_offer         = "UbuntuServer"
     vm_os_sku           = "14.04.2-LTS"
-    vm_os_id            = ""
+    vnet_subnet_id      = "${module.network.vnet_subnets[0]}"
+    load_balancer_backend_address_pool_ids = "${module.loadbalancer.azurerm_lb_backend_address_pool_id}"
     lb_port             = { 
                             http = ["80", "Tcp", "80"]
                             https = ["443", "Tcp", "443"]
@@ -90,6 +131,10 @@ module "computegroup" {
                             environment = "dev"
                             costcenter  = "it"
                           }
+}
+
+output "vmss_name"{
+  value = "${module.computegroup.vmss_name}"
 }
 
 ```
@@ -100,8 +145,7 @@ Outputs
 
 - `vmss_name` - Name of the virtual machine scale set
 - `vmss_id` - Id ot the virtual machine scale set
-- `vnet_id` - Id of the Virtual Network deployed as part of the VM scale set
-- `subnet_id` - Id of the Subnet deployed as part of the VM scale set
+- `vmss_public_ip` - Public IP of the virtual machine scale set exposed by the loadbalancer
 
 Authors
 =======

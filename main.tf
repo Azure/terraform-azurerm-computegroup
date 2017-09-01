@@ -2,14 +2,6 @@ provider "azurerm" {
     version = "~> 0.1"
 }
 
-module "loadbalancer" {
-  source = "github.com/Azure/terraform-azurerm-loadbalancer"
-  resource_group_name = "${ var.resource_group_name }"
-  location = "${var.location}"
-  lb_port = "${var.lb_port}"
-  prefix = "${ var.resource_group_name }"
-}
-
 module "os" {
   source = "./os"
   vm_os_simple = "${ var.vm_os_simple }"
@@ -21,24 +13,10 @@ resource "azurerm_resource_group" "vmss" {
   tags     = "${var.tags}"
 }
 
-resource "azurerm_virtual_network" "vnet" {
-  name                = "acctvn"
-  address_space       = ["10.0.0.0/16"]
-  location            = "${var.location}"
-  resource_group_name = "${azurerm_resource_group.vmss.name}"
-}
-
-resource "azurerm_subnet" "subnet1" {
-  name                 = "acctsub"
-  resource_group_name  = "${azurerm_resource_group.vmss.name}"
-  virtual_network_name = "${azurerm_virtual_network.vnet.name}"
-  address_prefix       = "10.0.1.0/24"
-}
-
 
 resource "azurerm_virtual_machine_scale_set" "vm-linux" {
-  count               = "${ replace("${var.vm_os_simple}${var.vm_os_offer}", "Server", "") == "Windows" ? 0 : 1 }"
-  name                = "vmscaleset"
+  count               = "${ contains(list("${var.vm_os_simple}","${var.vm_os_offer}"), "WindowsServer") ? 0 : 1 }"
+  name                = "${var.vmscaleset_name}"
   location            = "${var.location}"
   resource_group_name = "${azurerm_resource_group.vmss.name}"
   upgrade_policy_mode = "Manual"
@@ -73,7 +51,7 @@ resource "azurerm_virtual_machine_scale_set" "vm-linux" {
   }
 
   os_profile {
-    computer_name_prefix = "vmss"
+    computer_name_prefix = "${var.computer_name_prefix}"
     admin_username       = "${var.admin_username}"
     admin_password       = "${var.admin_password}"
   }
@@ -88,20 +66,20 @@ resource "azurerm_virtual_machine_scale_set" "vm-linux" {
   }
 
   network_profile {
-    name    = "terraformnetworkprofile"
+    name    = "${var.network_profile}"
     primary = true
 
     ip_configuration {
-      name                                   = "TestIPConfiguration"
-      subnet_id                              = "${azurerm_subnet.subnet1.id}"
-      load_balancer_backend_address_pool_ids = ["${module.loadbalancer.azurerm_lb_backend_address_pool_id}"]
+      name                                   = "IPConfiguration"
+      subnet_id                              = "${var.vnet_subnet_id}"
+      load_balancer_backend_address_pool_ids = ["${var.load_balancer_backend_address_pool_ids}"]
     }
   }
 }
 
 resource "azurerm_virtual_machine_scale_set" "vm-windows" {
-  count               = "${ replace("${var.vm_os_simple}${var.vm_os_offer}", "Server", "") == "Windows" ? 1 : 0 }"
-  name                = "vmscaleset"
+  count               = "${ contains(list("${var.vm_os_simple}","${var.vm_os_offer}"), "WindowsServer") ? 1 : 0 }"
+  name                = "${var.vmscaleset_name}"
   location            = "${var.location}"
   resource_group_name = "${azurerm_resource_group.vmss.name}"
   upgrade_policy_mode = "Manual"
@@ -136,19 +114,19 @@ resource "azurerm_virtual_machine_scale_set" "vm-windows" {
   }
 
   os_profile {
-    computer_name_prefix = "vmss"
+    computer_name_prefix = "${var.computer_name_prefix}"
     admin_username       = "${var.admin_username}"
     admin_password       = "${var.admin_password}"
   }
 
   network_profile {
-    name    = "terraformnetworkprofile"
+    name    = "${var.network_profile}"
     primary = true
 
     ip_configuration {
-      name                                   = "TestIPConfiguration"
-      subnet_id                              = "${azurerm_subnet.subnet1.id}"
-      load_balancer_backend_address_pool_ids = ["${module.loadbalancer.azurerm_lb_backend_address_pool_id}"]
+      name                                   = "IPConfiguration"
+      subnet_id                              = "${var.vnet_subnet_id}"
+      load_balancer_backend_address_pool_ids = ["${var.load_balancer_backend_address_pool_ids}"]
     }
   }
 }

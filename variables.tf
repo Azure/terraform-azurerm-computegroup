@@ -13,6 +13,16 @@ variable "vm_size" {
   description = "Size of the Virtual Machine based on Azure sizing"
 }
 
+variable "vmscaleset_name" {
+  default     = "vmscaleset"
+  description = "The name of the VM scale set that will be created in Azure"
+}
+
+variable "computer_name_prefix" { 
+  default     = "vmss"
+  description = "The prefix that will be used for the hostname of the instances part of the VM scale set"
+}
+
 variable "managed_disk_type" {
   default     = "Standard_LRS"
   description = "Type of managed disk for the VMs that will be part of this compute group. Allowable values are 'Standard_LRS' or 'Premium_LRS'."
@@ -36,6 +46,15 @@ variable "ssh_key" {
 variable "nb_instance" {
   description = "Specify the number of vm instances"
   default     = "1"
+}
+
+variable "vnet_subnet_id" { 
+  description = "The subnet id of the virtual network on which the vm scale set will be connected"
+}
+
+variable "network_profile" { 
+  default     = "terraformnetworkprofile"
+  description = "The name of the network profile that will be used in the VM scale set"
 }
 
 variable "vm_os_simple" {
@@ -66,6 +85,10 @@ variable "vm_os_version" {
 variable "vm_os_id" {
   description = "The ID of the image that you want to deploy if you are using a custom image."
   default = ""
+}
+
+variable "load_balancer_backend_address_pool_ids" {
+  description = "The id of the backend address pools of the loadbalancer to which the VM scale set is attached"
 }
 
 variable "lb_port" {
