@@ -1,11 +1,10 @@
 Deploys a group of Virtual Machines exposed to a public IP via a Load Balancer
 ==============================================================================
 
-This Terraform module deploys a Virtual Machines Scale Set in Azure with the following characteristics: 
+This Terraform module deploys a Virtual Machines Scale Set in Azure and open the specified ports on the loadbalancer for external access and returns the id of the VM scale set deployed.
 
-- Creates a virtual network and a subnet using the 10.0.0.0/16 and 10.0.1.0/24 address space.
-- Creates a load balancer for the scale set of virtual machines
-- Exposes through NAT one or several ports of the VMs on the load balancer
+This module requires a network and loadbalancer to be provider separately. You can provision them with the "Azure/network/azurerm" and "Azure/loadbanacer/azurerm" modules.
+
 
 Module Input Variables 
 ----------------------
@@ -47,22 +46,26 @@ provider "azurerm" {
   version = "~> 0.1"
 }
 
+variable "resource_group_name" {
+    default = "terraform-test"
+}
+
 module "network" {
     source = "Azure/network/azurerm"
     location = "westus"
-    prefix   = "vmss"
+    resource_group_name = "${var.resource_group_name}"
   }
 
 module "loadbalancer" {
   source = "Azure/loadbanacer/azurerm"
-  resource_group_name = "terraform-test"
+  resource_group_name = "${var.resource_group_name}"
   location = "westus"
   prefix = "terraform-test"
 }
 
 module "computegroup" { 
     source              = Azure/computegroup/azurerm"
-    resource_group_name = "my-resource-group"
+    resource_group_name = "${var.resource_group_name}"
     location            = "westus"
     vm_size             = "Standard_A0"
     admin_username      = "azureuser"
@@ -82,8 +85,8 @@ module "computegroup" {
                           }
 }
 
-output "vmss_name"{
-  value = "${module.computegroup.vmss_name}"
+output "vmss_id"{
+  value = "${module.computegroup.vmss_id}"
 }
 
 ```
@@ -96,22 +99,26 @@ provider "azurerm" {
   version = "~> 0.1"
 }
 
+variable "resource_group_name" {
+    default = "terraform-test"
+}
+
 module "network" {
     source = "Azure/network/azurerm"
     location = "westus"
-    prefix   = "vmss"
+    resource_group_name = "${var.resource_group_name}"
   }
 
 module "loadbalancer" {
   source = "Azure/loadbanacer/azurerm"
-  resource_group_name = "terraform-test"
+  resource_group_name = "${var.resource_group_name}"
   location = "westus"
   prefix = "terraform-test"
 }
 
 module "computegroup" { 
     source              = Azure/computegroup/azurerm"
-    resource_group_name = "my-resource-group"
+    resource_group_name = "${var.resource_group_name}"
     location            = "westus"
     vm_size             = "Standard_A0"
     admin_username      = "azureuser"
@@ -133,8 +140,8 @@ module "computegroup" {
                           }
 }
 
-output "vmss_name"{
-  value = "${module.computegroup.vmss_name}"
+output "vmss_id"{
+  value = "${module.computegroup.vmss_id}"
 }
 
 ```
@@ -143,9 +150,7 @@ output "vmss_name"{
 Outputs
 =======
 
-- `vmss_name` - Name of the virtual machine scale set
 - `vmss_id` - Id ot the virtual machine scale set
-- `vmss_public_ip` - Public IP of the virtual machine scale set exposed by the loadbalancer
 
 Authors
 =======
