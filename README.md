@@ -1,7 +1,7 @@
 Deploys a group of Virtual Machines exposed to a public IP via a Load Balancer
 ==============================================================================
 
-This Terraform module deploys a Virtual Machines Scale Set in Azure and open the specified ports on the loadbalancer for external access and returns the id of the VM scale set deployed.
+This Terraform module deploys a Virtual Machines Scale Set in Azure and opens the specified ports on the loadbalancer for external access and returns the id of the VM scale set deployed.
 
 This module requires a network and loadbalancer to be provider separately. You can provision them with the "Azure/network/azurerm" and "Azure/loadbanacer/azurerm" modules.
 
@@ -57,14 +57,14 @@ module "network" {
   }
 
 module "loadbalancer" {
-  source = "Azure/loadbanacer/azurerm"
+  source = "Azure/loadbalancer/azurerm"
   resource_group_name = "${var.resource_group_name}"
   location = "westus"
   prefix = "terraform-test"
 }
 
 module "computegroup" { 
-    source              = Azure/computegroup/azurerm"
+    source              = "Azure/computegroup/azurerm"
     resource_group_name = "${var.resource_group_name}"
     location            = "westus"
     vm_size             = "Standard_A0"
@@ -117,7 +117,7 @@ module "loadbalancer" {
 }
 
 module "computegroup" { 
-    source              = Azure/computegroup/azurerm"
+    source              = "Azure/computegroup/azurerm"
     resource_group_name = "${var.resource_group_name}"
     location            = "westus"
     vm_size             = "Standard_A0"
