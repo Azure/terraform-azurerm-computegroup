@@ -97,6 +97,11 @@ variable "lb_port" {
     }
 }
 
+variable "cmd_extension" { 
+    description = "Command to be excuted by the custom script extension"
+    default = ""
+}
+
 variable "tags" {
   type = "map"
   description = "A map of the tags to use on the resources that are deployed with this module."

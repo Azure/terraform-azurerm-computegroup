@@ -1,5 +1,5 @@
 provider "azurerm" {
-    version = "~> 0.1"
+    version = "~> 0.3"
 }
 
 module "os" {
@@ -75,6 +75,18 @@ resource "azurerm_virtual_machine_scale_set" "vm-linux" {
       load_balancer_backend_address_pool_ids = ["${var.load_balancer_backend_address_pool_ids}"]
     }
   }
+
+  extension { 
+    name = "vmssextension"
+    publisher = "Microsoft.OSTCExtensions"
+    type = "CustomScriptForLinux"
+    type_handler_version = "1.2"
+    settings = <<SETTINGS
+    {
+        "commandToExecute": "${var.cmd_extension}"
+    }
+    SETTINGS
+  }
 }
 
 resource "azurerm_virtual_machine_scale_set" "vm-windows" {
@@ -128,5 +140,17 @@ resource "azurerm_virtual_machine_scale_set" "vm-windows" {
       subnet_id                              = "${var.vnet_subnet_id}"
       load_balancer_backend_address_pool_ids = ["${var.load_balancer_backend_address_pool_ids}"]
     }
+  }
+
+  extension {
+    name = "vmssextension"
+    publisher = "Microsoft.Compute"
+    type = "CustomScriptExtension"
+    type_handler_version = "1.8"
+    settings = <<SETTINGS
+    {
+        "commandToExecute": "${var.cmd_extension}"
+    }
+    SETTINGS
   }
 }
