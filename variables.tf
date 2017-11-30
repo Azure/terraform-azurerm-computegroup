@@ -18,7 +18,7 @@ variable "vmscaleset_name" {
   description = "The name of the VM scale set that will be created in Azure"
 }
 
-variable "computer_name_prefix" { 
+variable "computer_name_prefix" {
   default     = "vmss"
   description = "The prefix that will be used for the hostname of the instances part of the VM scale set"
 }
@@ -35,7 +35,7 @@ variable "admin_username" {
 
 variable "admin_password" {
   description = "The admin password to be used on the VMSS that will be deployed. The password must meet the complexity requirements of Azure"
-  default = ""
+  default     = ""
 }
 
 variable "ssh_key" {
@@ -48,43 +48,43 @@ variable "nb_instance" {
   default     = "1"
 }
 
-variable "vnet_subnet_id" { 
+variable "vnet_subnet_id" {
   description = "The subnet id of the virtual network on which the vm scale set will be connected"
 }
 
-variable "network_profile" { 
+variable "network_profile" {
   default     = "terraformnetworkprofile"
   description = "The name of the network profile that will be used in the VM scale set"
 }
 
 variable "vm_os_simple" {
   description = "Specify Ubuntu or Windows to get the latest version of each os"
-  default = ""
+  default     = ""
 }
 
 variable "vm_os_publisher" {
   description = "The name of the publisher of the image that you want to deploy"
-  default = ""
+  default     = ""
 }
 
 variable "vm_os_offer" {
   description = "The name of the offer of the image that you want to deploy"
-  default = ""
+  default     = ""
 }
 
 variable "vm_os_sku" {
   description = "The sku of the image that you want to deploy"
-  default = ""
+  default     = ""
 }
 
 variable "vm_os_version" {
   description = "The version of the image that you want to deploy."
-  default = "latest"
+  default     = "latest"
 }
 
 variable "vm_os_id" {
   description = "The ID of the image that you want to deploy if you are using a custom image."
-  default = ""
+  default     = ""
 }
 
 variable "load_balancer_backend_address_pool_ids" {
@@ -92,20 +92,20 @@ variable "load_balancer_backend_address_pool_ids" {
 }
 
 variable "lb_port" {
-    description = "Protocols to be used for lb health probes and rules. [frontend_port, protocol, backend_port]"
-    default = {
-    }
+  description = "Protocols to be used for lb health probes and rules. [frontend_port, protocol, backend_port]"
+  default     = {}
 }
 
-variable "cmd_extension" { 
-    description = "Command to be excuted by the custom script extension"
-    default = ""
+variable "cmd_extension" {
+  description = "Command to be excuted by the custom script extension"
+  default     = ""
 }
 
 variable "tags" {
-  type = "map"
+  type        = "map"
   description = "A map of the tags to use on the resources that are deployed with this module."
+
   default = {
-      source = "terraform"
+    source = "terraform"
   }
 }
