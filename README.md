@@ -5,6 +5,8 @@ This Terraform module deploys a Virtual Machines Scale Set in Azure and opens th
 
 This module requires a network and loadbalancer to be provider separately. You can provision them with the "Azure/network/azurerm" and "Azure/loadbanacer/azurerm" modules.
 
+[![Build Status](https://travis-ci.org/Azure/terraform-azurerm-computegroup.svg?branch=master)](https://travis-ci.org/Azure/terraform-azurerm-computegroup)
+
 Usage
 -----
 
@@ -251,19 +253,7 @@ resource "azurerm_virtual_machine" "jumpbox" {
 
 Run Test
 -----
-### Requirements
-- [Git](https://git-scm.com/downloads)
-- [Ruby **(~> 2.3)**](https://www.ruby-lang.org/en/downloads/)
-- [Bundler **(~> 1.15)**](https://bundler.io/)
-- [Terraform **(~> 0.10.8)**](https://www.terraform.io/downloads.html)
-- [Configure Terraform for Azure](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/terraform-install-configure)
-- [Generate and add SSH Key](https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/)(save the key in ~/.ssh/id_rsa)
-
-### Quick Start
-1. `bundle install`
-2. `rake build`
-3. `rake e2e`
-
+Please visit [this repository](https://github.com/Azure/terraform-test) on how to run the tests.
 
 Authors
 =======
