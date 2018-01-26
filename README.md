@@ -3,7 +3,7 @@ Deploys a group of Virtual Machines exposed to a public IP via a Load Balancer
 
 This Terraform module deploys a Virtual Machines Scale Set in Azure and opens the specified ports on the loadbalancer for external access and returns the id of the VM scale set deployed.
 
-This module requires a network and loadbalancer to be provider separately. You can provision them with the "Azure/network/azurerm" and "Azure/loadbanacer/azurerm" modules.
+This module requires a network and loadbalancer to be provider separately. You can provision them with the "Azure/network/azurerm" and "Azure/loadbalancer/azurerm" modules.
 
 [![Build Status](https://travis-ci.org/Azure/terraform-azurerm-computegroup.svg?branch=master)](https://travis-ci.org/Azure/terraform-azurerm-computegroup)
 
@@ -14,7 +14,7 @@ Using the `vm_os_simple`:
 
 ```hcl 
 provider "azurerm" {
-  version = "~> 0.3"
+  version = "~> 1.0"
 }
 
 variable "resource_group_name" {
@@ -22,19 +22,21 @@ variable "resource_group_name" {
 }
 
 module "network" {
-    source = "Azure/network/azurerm"
-    location = "westus"
+    source              = "Azure/network/azurerm"
+    location            = "westus"
     resource_group_name = "${var.resource_group_name}"
   }
 
 module "loadbalancer" {
-  source = "Azure/loadbalancer/azurerm"
+  source              = "Azure/loadbalancer/azurerm"
   resource_group_name = "${var.resource_group_name}"
-  location = "westus"
-  prefix = "terraform-test"
-  "lb_port" {
-      http = [ "80", "Tcp", "80"]
-  }
+  location            = "westus"
+  prefix              = "terraform-test"
+  lb_port             = { 
+                          http  = ["80", "Tcp", "80"]
+                          https = ["443", "Tcp", "443"]
+                          #ssh   = ["22", "Tcp", "22"]
+                        }
 }
 
 module "computegroup" { 
@@ -50,10 +52,6 @@ module "computegroup" {
     vnet_subnet_id      = "${module.network.vnet_subnets[0]}"
     load_balancer_backend_address_pool_ids = "${module.loadbalancer.azurerm_lb_backend_address_pool_id}"
     cmd_extension       = "sudo apt-get -y install nginx"
-    lb_port             = { 
-                            http = ["80", "Tcp", "80"]
-                            https = ["443", "Tcp", "443"]
-                          }
     tags                = {
                             environment = "dev"
                             costcenter  = "it"
@@ -71,7 +69,7 @@ Using the `vm_os_publisher`, `vm_os_offer` and `vm_os_sku`
 ```hcl
 
 provider "azurerm" {
-  version = "~> 0.3"
+  version = "~> 1.0"
 }
 
 variable "resource_group_name" {
@@ -79,19 +77,21 @@ variable "resource_group_name" {
 }
 
 module "network" {
-    source = "Azure/network/azurerm"
-    location = "westus"
+    source              = "Azure/network/azurerm"
+    location            = "westus"
     resource_group_name = "${var.resource_group_name}"
   }
 
 module "loadbalancer" {
-  source = "Azure/loadbalancer/azurerm"
+  source              = "Azure/loadbalancer/azurerm"
   resource_group_name = "${var.resource_group_name}"
-  location = "westus"
-  prefix = "terraform-test"
-  "lb_port" {
-      http = [ "80", "Tcp", "80"]
-  }
+  location            = "westus"
+  prefix              = "terraform-test"
+  lb_port             = { 
+                          http  = ["80", "Tcp", "80"]
+                          https = ["443", "Tcp", "443"]
+                          #ssh   = ["22", "Tcp", "22"]
+                        }
 }
 
 module "computegroup" {
@@ -109,10 +109,6 @@ module "computegroup" {
     vnet_subnet_id      = "${module.network.vnet_subnets[0]}"
     load_balancer_backend_address_pool_ids = "${module.loadbalancer.azurerm_lb_backend_address_pool_id}"
     cmd_extension       = "sudo apt-get -y install nginx"
-    lb_port             = { 
-                            http = ["80", "Tcp", "80"]
-                            https = ["443", "Tcp", "443"]
-                          }
     tags                = {
                             environment = "dev"
                             costcenter  = "it"
@@ -129,7 +125,7 @@ The module does not expose direct access to each node of the VM scale set for se
 
 ```hcl
 provider "azurerm" {
-  version = "~> 0.3"
+  version = "~> 1.0"
 }
 
 variable "resource_group_name" {
@@ -149,11 +145,12 @@ module "network" {
 module "loadbalancer" {
   source = "Azure/loadbalancer/azurerm"
   resource_group_name = "${var.resource_group_name}"
-  location = "${var.location}"
-  prefix = "terraform-test"
-  "lb_port" {
-      http = [ "80", "Tcp", "80"]
-  }
+  location            = "${var.location}"
+  prefix              = "terraform-test"
+  lb_port             = { 
+                          http  = ["80", "Tcp", "80"]
+                          https = ["443", "Tcp", "443"]
+                        }
 }
 
 module "computegroup" {
@@ -171,9 +168,6 @@ module "computegroup" {
     vnet_subnet_id      = "${module.network.vnet_subnets[0]}"
     load_balancer_backend_address_pool_ids = "${module.loadbalancer.azurerm_lb_backend_address_pool_id}"
     cmd_extension       = "sudo apt-get -y install nginx"
-    lb_port             = {
-                            http = ["80", "Tcp", "80"]
-                          }
     tags                = {
                             environment = "codelab"
                           }
