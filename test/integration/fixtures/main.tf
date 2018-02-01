@@ -34,7 +34,6 @@ module "computegroup" {
   vnet_subnet_id                         = "${module.network.vnet_subnets[0]}"
   load_balancer_backend_address_pool_ids = "${module.loadbalancer.azurerm_lb_backend_address_pool_id}"
   cmd_extension                          = "sudo apt-get -y install nginx"
-  
 
   tags = {
     environment = "dev"
