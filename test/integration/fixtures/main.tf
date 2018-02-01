@@ -28,7 +28,7 @@ module "computegroup" {
   vm_size                                = "Standard_A0"
   admin_username                         = "azureuser"
   admin_password                         = "ComplexPassword"
-  ssh_key                                = "$TMP/id_rsa.pub"
+  ssh_key                                = "$HOME/id_rsa.pub"
   nb_instance                            = 2
   vm_os_simple                           = "${var.vm_os_simple}"
   vnet_subnet_id                         = "${module.network.vnet_subnets[0]}"
