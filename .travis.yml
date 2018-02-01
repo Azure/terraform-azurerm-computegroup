@@ -17,4 +17,4 @@ jobs:
     - stage: rake e2e
       install: skip
       script:
-      - ssh-keygen -t rsa -b 2048 -C "terraform@microsoft" -P temppass -f /home/travis/id_rsa && docker run -v /home/travis/id_rsa:/root/id_rsa -v $PWD:/tf-test/module -e ARM_CLIENT_ID -e ARM_TENANT_ID -e ARM_SUBSCRIPTION_ID -e ARM_CLIENT_SECRET -e ARM_TEST_LOCATION -e ARM_TEST_LOCATION_ALT --rm microsoft/terraform-test rake -f ../Rakefile e2e
+      - mkdir /home/travis/ssh && ssh-keygen -t rsa -b 2048 -C "terraform@microsoft" -P temppass -f /home/travis/ssh/id_rsa && docker run -v /home/travis/ssh:/tmp -v $PWD:/tf-test/module -e ARM_CLIENT_ID -e ARM_TENANT_ID -e ARM_SUBSCRIPTION_ID -e ARM_CLIENT_SECRET -e ARM_TEST_LOCATION -e ARM_TEST_LOCATION_ALT --rm microsoft/terraform-test rake -f ../Rakefile e2e
