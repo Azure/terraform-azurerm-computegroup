@@ -3,7 +3,7 @@ provider "azurerm" {
 }
 
 module "network" {
-  version             = "1.1.1"
+  version             = "2.0.0"
   source              = "Azure/network/azurerm"
   location            = "${var.location}"
   resource_group_name = "${var.resource_group_name}"
