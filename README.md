@@ -1,18 +1,18 @@
-Deploys a group of Virtual Machines exposed to a public IP via a Load Balancer
-==============================================================================
+# terraform-azurerm-computegroup
+
+## Deploys a group of Virtual Machines exposed to a public IP via a Load Balancer
+
+[![Build Status](https://travis-ci.org/Azure/terraform-azurerm-computegroup.svg?branch=master)](https://travis-ci.org/Azure/terraform-azurerm-computegroup)
 
 This Terraform module deploys a Virtual Machines Scale Set in Azure and opens the specified ports on the loadbalancer for external access and returns the id of the VM scale set deployed.
 
 This module requires a network and loadbalancer to be provider separately. You can provision them with the "Azure/network/azurerm" and "Azure/loadbalancer/azurerm" modules.
 
-[![Build Status](https://travis-ci.org/Azure/terraform-azurerm-computegroup.svg?branch=master)](https://travis-ci.org/Azure/terraform-azurerm-computegroup)
-
-Usage
------
+## Usage
 
 Using the `vm_os_simple`:
 
-```hcl 
+```hcl
 provider "azurerm" {
   version = "~> 1.0"
 }
@@ -32,14 +32,14 @@ module "loadbalancer" {
   resource_group_name = "${var.resource_group_name}"
   location            = "westus"
   prefix              = "terraform-test"
-  lb_port             = { 
+  lb_port             = {
                           http  = ["80", "Tcp", "80"]
                           https = ["443", "Tcp", "443"]
                           #ssh   = ["22", "Tcp", "22"]
                         }
 }
 
-module "computegroup" { 
+module "computegroup" {
     source              = "Azure/computegroup/azurerm"
     resource_group_name = "${var.resource_group_name}"
     location            = "westus"
@@ -64,7 +64,7 @@ output "vmss_id"{
 
 ```
 
-Using the `vm_os_publisher`, `vm_os_offer` and `vm_os_sku` 
+Using the `vm_os_publisher`, `vm_os_offer` and `vm_os_sku`
 
 ```hcl
 
@@ -87,7 +87,7 @@ module "loadbalancer" {
   resource_group_name = "${var.resource_group_name}"
   location            = "westus"
   prefix              = "terraform-test"
-  lb_port             = { 
+  lb_port             = {
                           http  = ["80", "Tcp", "80"]
                           https = ["443", "Tcp", "443"]
                           #ssh   = ["22", "Tcp", "22"]
@@ -132,7 +132,7 @@ variable "resource_group_name" {
     default = "jumpbox-test"
 }
 
-variable "location" { 
+variable "location" {
     default = "westus"
 }
 
@@ -147,7 +147,7 @@ module "loadbalancer" {
   resource_group_name = "${var.resource_group_name}"
   location            = "${var.location}"
   prefix              = "terraform-test"
-  lb_port             = { 
+  lb_port             = {
                           http  = ["80", "Tcp", "80"]
                           https = ["443", "Tcp", "443"]
                         }
@@ -245,15 +245,80 @@ resource "azurerm_virtual_machine" "jumpbox" {
 
 ````
 
-Run Test
------
-Please visit [this repository](https://github.com/Azure/terraform-test) on how to run the tests.
+## Test
 
-Authors
-=======
+### Configurations
+
+- [Configure Terraform for Azure](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/terraform-install-configure)
+
+We provide 2 ways to build, run, and test the module on a local development machine.  [Native (Mac/Linux)](#native-maclinux) or [Docker](#docker).
+
+### Native(Mac/Linux)
+
+#### Prerequisites
+
+- [Ruby **(~> 2.3)**](https://www.ruby-lang.org/en/downloads/)
+- [Bundler **(~> 1.15)**](https://bundler.io/)
+- [Terraform **(~> 0.11.7)**](https://www.terraform.io/downloads.html)
+- [Golang **(~> 1.10.3)**](https://golang.org/dl/)
+
+#### Environment setup
+
+We provide simple script to quickly set up module development environment:
+
+```sh
+$ curl -sSL https://raw.githubusercontent.com/Azure/terramodtest/master/tool/env_setup.sh | sudo bash
+```
+
+#### Run test
+
+Then simply run it in local shell:
+
+```sh
+$ cd $GOPATH/src/{directory_name}/
+$ bundle install
+$ rake build
+$ rake e2e
+```
+
+### Docker
+
+We provide a Dockerfile to build a new image based `FROM` the `microsoft/terraform-test` Docker hub image which adds additional tools / packages specific for this module (see Custom Image section).  Alternatively use only the `microsoft/terraform-test` Docker hub image [by using these instructions](https://github.com/Azure/terraform-test).
+
+#### Prerequisites
+
+- [Docker](https://www.docker.com/community-edition#/download)
+
+#### Custom Image
+
+This builds the custom image:
+
+```sh
+$ docker build --build-arg BUILD_ARM_SUBSCRIPTION_ID=$ARM_SUBSCRIPTION_ID --build-arg BUILD_ARM_CLIENT_ID=$ARM_CLIENT_ID --build-arg BUILD_ARM_CLIENT_SECRET=$ARM_CLIENT_SECRET --build-arg BUILD_ARM_TENANT_ID=$ARM_TENANT_ID -t azure-computegroup .
+```
+
+This runs the build and unit tests:
+
+```sh
+$ docker run --rm azure-computegroup /bin/bash -c "bundle install && rake build"
+```
+
+This runs the end to end tests:
+
+```sh
+$ docker run --rm azure-computegroup /bin/bash -c "bundle install && rake e2e"
+```
+
+This runs the full tests:
+
+```sh
+$ docker run --rm azure-computegroup /bin/bash -c "bundle install && rake full"
+```
+
+## Authors
+
 Originally created by [Damien Caro](http://github.com/dcaro)
 
-License
-=======
+## License
 
 [MIT](LICENSE)
