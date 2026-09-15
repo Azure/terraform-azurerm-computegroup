@@ -1,3 +1,6 @@
+> [!WARNING]
+> This module is no longer maintained, please consider migrating to [Azure Verified Modules](https://aka.ms/avm).
+
 # terraform-azurerm-computegroup
 
 ## Deploys a group of Virtual Machines exposed to a public IP via a Load Balancer
